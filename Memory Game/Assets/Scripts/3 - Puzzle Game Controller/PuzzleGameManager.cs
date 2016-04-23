@@ -16,8 +16,11 @@ public class PuzzleGameManager : MonoBehaviour {
 	private List<Animator> puzzleButtonsAnimators = new List<Animator>();
 	[SerializeField]
 	private List<Sprite> gamePuzzleSprites = new List<Sprite>();
-	
-	private int level;
+
+    [SerializeField]
+    private List<AudioClip> gamePuzzleAudioClips = new List<AudioClip>();
+
+    private int level;
 	private string selectedPuzzle;
 
 	private Sprite puzzleBackgroundImage;
@@ -41,7 +44,7 @@ public class PuzzleGameManager : MonoBehaviour {
 			firstGuessPuzzle = gamePuzzleSprites[firstGuessIndex].name;
 
 			StartCoroutine(TurnPuzzleButtonUp(puzzleButtonsAnimators[firstGuessIndex], 
-			                                  puzzleButtons[firstGuessIndex], gamePuzzleSprites[firstGuessIndex]));
+			                                  puzzleButtons[firstGuessIndex], gamePuzzleSprites[firstGuessIndex], gamePuzzleAudioClips[firstGuessIndex]));
 
 		} else if (!secondGuess) {
 			secondGuess = true;
@@ -51,7 +54,7 @@ public class PuzzleGameManager : MonoBehaviour {
 			secondGuessPuzzle = gamePuzzleSprites[secondGuessIndex].name;
 			
 			StartCoroutine(TurnPuzzleButtonUp(puzzleButtonsAnimators[secondGuessIndex], 
-			                                  puzzleButtons[secondGuessIndex], gamePuzzleSprites[secondGuessIndex]));
+			                                  puzzleButtons[secondGuessIndex], gamePuzzleSprites[secondGuessIndex], gamePuzzleAudioClips[secondGuessIndex]));
 
 			StartCoroutine(CheckIfThePuzzlesMatch(puzzleBackgroundImage));
 
@@ -153,11 +156,15 @@ public class PuzzleGameManager : MonoBehaviour {
 		return puzzleButtonsAnimators;
 	}
 
-	IEnumerator TurnPuzzleButtonUp(Animator anim, Button btn, Sprite puzzleImage) {
+	IEnumerator TurnPuzzleButtonUp(Animator anim, Button btn, Sprite puzzleImage, AudioClip audioClip) {
 		anim.Play ("TurnUp");
 		yield return new WaitForSeconds (.4f);
 		btn.image.sprite = puzzleImage;
-	}
+
+        AudioSource aSource = GetComponent<AudioSource>();
+        aSource.clip = audioClip;
+        aSource.Play();
+    }
 
 	IEnumerator TurnPuzzleButtonBack(Animator anim, Button btn, Sprite puzzleImage) {
 		anim.Play ("TurnBack");
@@ -184,9 +191,10 @@ public class PuzzleGameManager : MonoBehaviour {
 
 	} 
 	
-	public void SetGamePuzzleSprites(List<Sprite> gamePuzzleSprites) {
+	public void SetGamePuzzleSprites(List<Sprite> gamePuzzleSprites,  List<AudioClip> gamePuzzleAudioClips ) {
 		this.gamePuzzleSprites = gamePuzzleSprites;
-	} 
+        this.gamePuzzleAudioClips = gamePuzzleAudioClips;
+    } 
 	
 	public void SetLevel(int level) {
 		this.level = level;

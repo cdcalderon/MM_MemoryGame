@@ -9,10 +9,14 @@ public class SetupPuzzleGame : MonoBehaviour {
 	private PuzzleGameManager puzzleGameManager;
 
 	private Sprite[] candyPuzzleSprites, transportPuzzleSprites, fruitPuzzleSprites;
-	
-	private List<Sprite> gamePuzzles = new List<Sprite>();
-	
-	private List<Button> puzzleButtons = new List<Button> ();
+
+    private AudioClip[] audioClips;
+
+    private List<Sprite> gamePuzzles = new List<Sprite>();
+
+    private List<AudioClip> gamePuzzleAudioClips = new List<AudioClip>();
+
+    private List<Button> puzzleButtons = new List<Button> ();
 	
 	private List<Animator> puzzleButtonsAnimators = new List<Animator> ();
 	
@@ -25,11 +29,20 @@ public class SetupPuzzleGame : MonoBehaviour {
 		candyPuzzleSprites = Resources.LoadAll<Sprite> ("Sprites/Game Assets/Candy");
 		transportPuzzleSprites = Resources.LoadAll<Sprite> ("Sprites/Game Assets/Transport");
 		fruitPuzzleSprites = Resources.LoadAll<Sprite> ("Sprites/Game Assets/Fruits");
+
+        audioClips = Resources.LoadAll<AudioClip>("Sounds/PNL");
+
+        AudioSource aSource = GetComponent<AudioSource>();
+	    aSource.clip = audioClips[4];
+        aSource.Play();
 	}
 
 	void PrepareGameSprites() {
 		gamePuzzles.Clear ();
 		gamePuzzles = new List<Sprite> ();
+
+        gamePuzzleAudioClips.Clear();
+        gamePuzzleAudioClips = new List<AudioClip>();
 
 		int index = 0;
 
@@ -66,6 +79,7 @@ public class SetupPuzzleGame : MonoBehaviour {
 				}
 
 				gamePuzzles.Add(candyPuzzleSprites[index]);
+                gamePuzzleAudioClips.Add(audioClips[index]);
 
 				index++;
 
@@ -108,17 +122,21 @@ public class SetupPuzzleGame : MonoBehaviour {
 			
 		}
 
-		Shuffle (gamePuzzles);
+		Shuffle (gamePuzzles, gamePuzzleAudioClips);
 
 	}
 
-	void Shuffle(List<Sprite> list) {
+	void Shuffle(List<Sprite> list, List<AudioClip> audList ) {
 		for (int i = 0; i < list.Count; i++) {
 			Sprite temp = list[i];
-			int randomIndex = Random.Range(i, list.Count);
+            AudioClip tempAu = audList[i];
+            int randomIndex = Random.Range(i, list.Count);
 			list[i] = list[randomIndex];
-			list[randomIndex] = temp;
-		}
+		    audList[i] = audList[randomIndex];
+            list[randomIndex] = temp;
+            audList[randomIndex] = tempAu;
+
+        }
 	}
 
 	public void SetLevelAndPuzzle(int level, string selectedPuzzle) {
@@ -127,7 +145,7 @@ public class SetupPuzzleGame : MonoBehaviour {
 
 		PrepareGameSprites ();
 
-		puzzleGameManager.SetGamePuzzleSprites (this.gamePuzzles);
+		puzzleGameManager.SetGamePuzzleSprites (this.gamePuzzles, gamePuzzleAudioClips);
 
 	}
 	
